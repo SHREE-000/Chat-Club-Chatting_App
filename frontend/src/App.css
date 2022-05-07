@@ -1,0 +1,49 @@
+#home {
+    background: rgb(0, 101, 219);
+    background: linear-gradient(90deg, rgb(0, 101, 219) 50% , rgba(0,212 ,255,1) 100%);
+    height: 500px;
+  
+  }
+  .card {
+    transition: all .5s ease;
+    background-image: linear-gradient(to bottom right, white, grey);
+  }
+  .card:hover {
+    cursor: pointer;
+    box-shadow: 0.5rem 1rem rgba(0, 0, 0, .15);
+  }
+  .nav-item {
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .form {
+    background: rgb(0, 101, 219);
+    background: linear-gradient(90deg, rgb(0, 101, 219) 50% , rgba(0,212 ,255,1) 100%);
+  }
+  footer{
+  
+      margin-top: 20px;
+      padding-top: 20px;
+  }
+  .bg__card__navbar{
+      background-color: #000000;
+  }
+  .bg__card__footer{
+      background-color: #000000 !important;
+  }
+  #add__new__list{
+      top: -38px;
+      right: 0px;
+  }
+  .card-text{
+    min-height: 365px;
+    display: flex;
+    align-items: center;
+
+  }
+  .footer {
+    width: 100%;
+    height: 100px;
+    margin-top: 50px;
+    background-image: linear-gradient(to bottom right, white, grey);
+  }
