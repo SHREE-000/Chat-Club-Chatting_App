@@ -1,9 +1,10 @@
 import { Button, Typography } from '@mui/material';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Avatar from '../../../shared/components/Avatar';
 import OnlineIndicator from './OnlineIndicator';
 import { setChosenChatDetails } from '../../../features/chatting/chattingSlice';
 import { useDispatch, useSelector } from 'react-redux'
+import { setSideBarOpenForMessage } from '../../../features/chatting/chattingSlice'
 
 
 const FriendsListItem = ({ id, username, isOnline }) => {
@@ -11,9 +12,14 @@ const FriendsListItem = ({ id, username, isOnline }) => {
     const { chatType } = useSelector( (state) => state.chat)
     const dispatch = useDispatch()
     const handleChooseActiveConversation = () => {
-        console.log(chatType, 'chatttttttttttttttt');
         dispatch(setChosenChatDetails({id, username, chatType   }))
+        // dispatch( setSideBarOpenForMessage(true))
+        // dispatch( setSideBarOpenForMessage(false))
     }
+
+    // useEffect( () => {
+    //     f
+    // })
 
   return (
     <Button 

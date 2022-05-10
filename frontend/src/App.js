@@ -9,40 +9,39 @@ import HomePage from "./HomePage/HomePage";
 import PureService from "./HomePage/PureService";
 import { useSocket } from "./features/customHooks/useSocket";
 import { useDispatch } from "react-redux";
-import 
-{ 
-  setFriendOnlineUsingSocket, 
-  socketErrorAlertForSocket 
+
+import {
+  setFriendOnlineUsingSocket,
+  socketErrorAlertForSocket,
 } from "./features/friends/friendsSlice";
 
+
 function App() {
-  const dispatch = useDispatch();
+
+const dispatch = useDispatch();
 
   // eslint-disable-next-line
-  const socket = useSocket({
+  useSocket({
     socketSetup: (socket) => {
-      // add global socket events here     
+      // add global socket events here
       socket.on("online-status", (data) =>
         dispatch(
-          setFriendOnlineUsingSocket({         
+          setFriendOnlineUsingSocket({
             id: data.userId,
             status: data.isOnline,
           })
         )
       );
-
-
     },
 
     errorCallback: (error) => {
-      dispatch(socketErrorAlertForSocket(error))
+      dispatch(socketErrorAlertForSocket(error));
       console.log(error);
     },
 
     connectCallback: (data) => {
-      console.log('connected to socket');
+      console.log("connected to socket");
     },
-
   });
 
   return (

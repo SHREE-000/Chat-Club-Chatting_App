@@ -228,7 +228,7 @@ export const friendsSlice = createSlice({
         state.friends = "";
         state.onlineFriends = "";
       });
-  },
+  }, 
 });
 
 export const {

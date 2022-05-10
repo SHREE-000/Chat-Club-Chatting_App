@@ -30,6 +30,14 @@ export const useSocket = ( params = defaultParams) => {
       // socket.on("online-status", (data) => socketSetup(data))
       // socket.emit('direct-message', (data) => {socketSetup(data)
       // console.log(data, 'its data from front end');}) 
+      // socket.emit("direct-chat-history",
+      // {receiverUserId: chosenChatDetails.id,},
+      // )
+      
+      // socket.on("direct-chat-history", (data) => {
+      //   setmessageDetails(data.messages)
+      //   dispatch(setMessages(data.messages))
+      // })
 
 
       setSocket(socket);

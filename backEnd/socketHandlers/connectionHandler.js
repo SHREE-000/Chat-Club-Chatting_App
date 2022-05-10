@@ -1,6 +1,8 @@
 const { Types } = require("mongoose");
 const user = require("../models/user");
-const { connectedUsers, onlineUsers, SocketEvents } = require("../utils/socket.util");
+const { connectedUsers, onlineUsers, SocketEvents, currentTotalUsers, activeConnections } = require("../utils/socket.util");
+
+console.log(connectedUsers, 'its connected users from connectionHandler');   
 
 const connectionHandler = async (socket, io) => {
   const { userId } = socket.user;
@@ -8,6 +10,10 @@ const connectionHandler = async (socket, io) => {
 
   connectedUsers.set(socketId, { userId });
   onlineUsers.add(userId);
+  const status = currentTotalUsers.includes(userId)
+  if (!status) {
+    currentTotalUsers.push(userId)
+  }
 
   const onlineDetails = await user.updateOne( 
     {

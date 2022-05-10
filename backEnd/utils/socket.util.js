@@ -10,9 +10,15 @@ Object.freeze(SocketEvents);
 
 const connectedUsers = new Map();
 const onlineUsers = new Set();
+const currentTotalUsers = [];
+const activeConnections = [];
+
+
 
 module.exports = {
   connectedUsers,
   onlineUsers,
   SocketEvents,
+  currentTotalUsers,
+  activeConnections,
 };

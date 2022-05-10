@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { styled } from "@mui/system";
 import { io } from "socket.io-client";
+import { setNewMessages } from "../../features/chatting/chattingSlice"
 // import { useSocket } from "../../features/customHooks/useSocket";
 // import { sendDirectMessage } from "../../realtimeCommunication/socketConnection";
+import { setMessages, getMessages } from "../../features/chatting/chattingSlice";
 
 const MainContainer = styled("div")({
   height: "60px",
@@ -25,58 +27,76 @@ const Input = styled("input")({
 });
 
 const NewMessageInput = () => {
+  const dispatch = useDispatch()
   const [socket, setSocket] = useState(null);
-  const user = useSelector((state) => state.auth);
+  const user = useSelector((state) => state.auth); 
+  const [messageSent, setMessageSent] = useState(false)
+  const [message, setMessage] = useState();
+  const 
+  { 
+    sideBarOpenForMessage, 
+    getUserId, 
+    chosenChatDetails, 
+  } = useSelector((state) => state.chat);  
+  
 
-  useEffect(() => {
+  useEffect( () => {
     if (user || !user.user === null) {
       const token = user.user.userDetails.token;
-
+      
       const socket = io("http://localhost:5002", {
         auth: {
           token,
         },
+      }); 
+      setSocket(socket);
+
+      if (chosenChatDetails || !chosenChatDetails === null) {    
+        socket.emit("direct-chat-history", {
+          receiverUserId: chosenChatDetails.id,
+        });
+      } 
+
+      socket.on("direct-chat-history", (data) => {
+
+        // const check = data.participants.includes(chosenChatDetails.id)
+        // console.log(data, 'its dataaaaaaaaaaaaaaaaaaaaa');
+        dispatch(getMessages(
+          {
+          receiverUserId: chosenChatDetails.id, 
+          participants: data.participants}
+          )); 
+        dispatch(setMessages(data.messages)); 
       });
 
-      setSocket(socket);
+        setMessageSent(false) 
+ 
     }
-  }, [user]);
-
-  const [message, setMessage] = useState();
-  const { chosenChatDetails } = useSelector((state) => state.chat);
-
+  }, [messageSent,dispatch, sideBarOpenForMessage, chosenChatDetails]);
+   
   const handleMessageValueChange = (event) => {
     setMessage(event.target.value);
+    // dispatch(setNewMessages(event.target.value))
+    // dispatch(setMessages());
   };
 
   const handleKeyPressed = (event) => {
     if (event.key === "Enter") {
       handleSendMessage();
+      setMessageSent(true)
     }
+
   };
 
   const handleSendMessage = (userDetails) => {
     if (message.length > 0) {
-      // useSocket({
-      //   socketSetup: (socket) => {
-      //     socket.on("direct-message", {
-      //       receiverUserId: chosenChatDetails.id,
-      //       content: message,
-      //     });
-      //   },
-      // });
-      // setMessage('');
 
-      socket.emit("direct-message", {
+      const emit = socket.emit("direct-message", {
         receiverUserId: chosenChatDetails.id,
         content: message,
       });
 
-      // useSendDirectMessage({
-      //   receiverUserId: chosenChatDetails.id,
-      //   content: message,
-      // });
-      // setMessage("");
+
     }
   };
 

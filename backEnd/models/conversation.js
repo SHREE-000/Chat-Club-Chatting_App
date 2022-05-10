@@ -13,7 +13,8 @@ const mongoose = require('mongoose')
              type: Schema.Types.ObjectId,
              ref: 'Message',
         }
-     ]
+     ],
+ 
  });
 
  module.exports = mongoose.model('Conversation', conversationSchema);
