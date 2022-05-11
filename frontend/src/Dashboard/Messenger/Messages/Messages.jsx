@@ -38,14 +38,14 @@ const Messages = ({ messagesFromContent }) => {
   return (
     <MainContainer>
       <MessagesHeader />
-      {messageDetailsFromDatabase &&
-        messageDetailsFromDatabase.length > 0 &&
-        messageDetailsFromDatabase.map((messages, index) => {
+      {messageDetails &&
+        messageDetails.length > 0 &&
+        messageDetails.map((messages, index) => {
           if (messages.date && messages.date != null) {
             const sameAuthor =
               index > 0 &&
-              messageDetailsFromDatabase[index].author._id ===
-                messageDetailsFromDatabase[index - 1].author._id;
+              messageDetails[index].author._id ===
+              messageDetails[index - 1].author._id;
 
             const sameDay =
               index > 0 &&
@@ -54,7 +54,7 @@ const Messages = ({ messagesFromContent }) => {
                 "dd/mm/yy"
               ) ===
                 convertDateToHumanReadable(
-                  new Date(messageDetailsFromDatabase[index - 1].date),
+                  new Date(messageDetails[index - 1].date),
                   "dd/mm/yy"
                 );
 

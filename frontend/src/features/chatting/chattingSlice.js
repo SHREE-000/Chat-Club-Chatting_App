@@ -23,7 +23,7 @@ export const getMessages = createAsyncThunk(
   
         const config = {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,     
           },
         };
   
@@ -34,7 +34,7 @@ export const getMessages = createAsyncThunk(
             console.log(errorFromCatch, 'errorFromCatcherrorFromCatch');
           });
 
-          console.log(response.data,'it response from chatting slice');
+          console.log(response.data, 'its response.dataaaaaaaaaaaaaaaaa');
   
         return response.data;
       } catch (error) {}
@@ -57,7 +57,6 @@ export const chattingSlice = createSlice({
         },
 
         setMessages: (state, {payload}) => {
-            console.log(payload, 'payloaddddd');
             return {
                 ...state,
                 messageDetails: payload
@@ -96,7 +95,9 @@ export const chattingSlice = createSlice({
         return {
             ...state, 
             messageDetailsFromDatabase : action.payload.messages,
-            getUserId : action.payload.userId
+            messageDetails : action.payload.lastMessage,
+            getUserId : action.payload.userId,
+            // messageDetails: [...state.messageDetails, action.payload.lastMessage] 
         }
               
           })

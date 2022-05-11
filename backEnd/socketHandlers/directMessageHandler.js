@@ -8,7 +8,7 @@ const getMessages = require('../controllers/friendInvitation/getMessages')
 const directMessageHandler = async(socket) => {
 
     socket.on(SocketEvents.DIRECT_MESSAGE, async(data) => {
-        
+
         const { userId } = socket.user
         const { receiverUserId, content } = data;
 

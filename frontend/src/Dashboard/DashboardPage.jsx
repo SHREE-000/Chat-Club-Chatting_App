@@ -7,9 +7,7 @@ import AppBar from "../Dashboard/AppBar/AppBar";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { reset } from "../features/auth/authSlice";
-// import { connectWithSocketServer } from "../realtimeCommunication/socketConnection";
-import { setFriendOnlineUsingSocket } from '../features/friends/friendsSlice'
-
+import Room from "./Room/Room";
 
 const Wrapper = styled("div")({
   width: "100%",
@@ -21,6 +19,7 @@ const DashboardPage = ({socket}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const { isUserInRoom } = useSelector((state) => state.room);
 
   const onLogout = () => {
     dispatch(reset());
@@ -36,27 +35,6 @@ const DashboardPage = ({socket}) => {
     }
   }
 
-  // useEffect( () => {
-
-  //   if (socket) {
-  //     socket.on('online-status', (data) => {
-  //       // dispatch(setFriendOnlineUsingSocket(data))
-  //     },[])
-  //   }
-
-  // })
-
-  // useEffect(() => {
-  //   const userDetails = localStorage.getItem("user");
-
-  //   if (!user && !userDetails) {
-  //     onLogout();
-  //   } else {
-  //     if (userDetails) {
-  //       connectWithSocketServer(JSON.parse(userDetails));
-  //     }
-  //   }
-  // }, [onLogout]);
 
   return (
     <Wrapper>
@@ -64,6 +42,7 @@ const DashboardPage = ({socket}) => {
       <FriendsSideBar />
       <Messenger />
       <AppBar onLogout={onLogout} />
+      {isUserInRoom && <Room />}
     </Wrapper>
   );
 };

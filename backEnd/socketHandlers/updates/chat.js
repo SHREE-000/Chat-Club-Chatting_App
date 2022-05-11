@@ -57,17 +57,16 @@ const chatUpdateChatHistory = async (
     
     
     if (toSpecifiedSocketId) {
-
-      const checkElement = socketIds.includes(toSpecifiedSocketId)
+      const checkElement = socketIds.includes({socketId:socket.id, user: socket.user.userId})
       if (!checkElement) {
-      socketIds.push(toSpecifiedSocketId)
+        socketIds.push({socketId:socket.id, user: socket.user.userId})
     }
-
-    // console.log(conversation, 'its conversationnnnnnnnnnnnnnnnnn');
+    console.log(toSpecifiedSocketId,' its socketIdsssss');
 
       // initial update of chat history
       return io.to(toSpecifiedSocketId).emit("direct-chat-history", {
         messages: conversation.messages,
+        // messages: conversation.messages,
         participants: conversation.participants,
       })
 
@@ -90,6 +89,7 @@ const chatUpdateChatHistory = async (
       if (activeConnections) {
         activeConnections.forEach((socketId) => {
           io.to(socketId).emit("direct-chat-history", {
+            // messages: conversation.messages,
             messages: conversation.messages,
             participants: conversation.participants,
           });

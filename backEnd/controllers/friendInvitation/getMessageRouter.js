@@ -3,17 +3,11 @@ const Message = require('../../models/message')
 const User = require('../../models/user')
 
     const getMessageRouter = async (req, res) => {
-    let userId
-
+  
     const  receiverUserId  = req.body.receiverUserId;
-    req.body.participants.map( (user) => {
-        if (user != receiverUserId) {
-            userId = user
-        }
-    })
+    const userId = req.body.userId
 
-    console.log(receiverUserId, 'its receiverUserIddddddddddddddd');
-    console.log(userId, 'its userIddddddddddddddddddddddddd');
+    if (receiverUserId && userId) {
 
     const conversations = await Conversation.findOne({
         participants: { $all: [userId, receiverUserId] },
@@ -26,7 +20,7 @@ const User = require('../../models/user')
         const conversationData = await Conversation.findById(
             conversations._id.toString()
         ).populate({
-            path: "messages",
+            path: "messages",        
             model: Message, 
             populate: {
               path: "author",
@@ -34,15 +28,16 @@ const User = require('../../models/user')
               select: "username _id",
             },
           });
-          let messages = conversationData.messages
+          let lastMessage = conversationData.messages[conversationData.messages.length - 1]
+        //   const messages = conversationData.messages
           const data = {
             userId,
-            messages
+            lastMessage,
           }
           res.status(200).json(data)
     }
 
-
+    }
 
 }
 
