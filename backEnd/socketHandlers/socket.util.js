@@ -1,7 +1,7 @@
 const SocketEvents = {
   CONNECTION: "connection",
-  DISCONNECT: "disconnect",
-
+  DISCONNECT: "disconnection",
+  
   ONLINE_STATUS: "online-status",
   DIRECT_MESSAGE: "direct-message",
   DIRECT_CHAT_HISTORY: "direct-chat-history",

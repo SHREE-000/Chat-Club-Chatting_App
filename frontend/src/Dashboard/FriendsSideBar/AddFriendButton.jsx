@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import CustomPrimaryButton from '../../shared/components/CustomPrimaryButton';
 import AddFriendDialog from './AddFriendDialog';
+import { useSelector, useDispatch } from 'react-redux';
+import { invitation } from '../../features/friends/friendsSlice';
 
 const additionalStyles = {
     marginTop: '10px',
@@ -10,6 +12,8 @@ const additionalStyles = {
 }
 
 const AddFriendButton = () => {
+    const dispatch = useDispatch()
+
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const handleOpenAddFriendDialog = () => {
         setIsDialogOpen(true)
@@ -17,6 +21,7 @@ const AddFriendButton = () => {
 
     const handleCloseAddFriendDialog = () => {
         setIsDialogOpen(false)
+        dispatch(invitation())
     }
   return (
     <>

@@ -7,7 +7,6 @@ const friendInvitationControllers = require('../controllers/friendInvitation/fri
 const postFriendInvitationSchema = Joi.object({
     targetMailAddress: Joi.string().email()
 });
-const { getMessageRouter } = require('../controllers/friendInvitation/getMessageRouter')
 
 router.post(
     '/invite', 
@@ -15,11 +14,11 @@ router.post(
     validator.body(postFriendInvitationSchema), 
     friendInvitationControllers.controllers.postInvite);
 
-    router.get(
-        '/friendslist',
-        auth,
-        friendInvitationControllers.controllers.getPendingList
-    )
+    // router.get(
+    //     '/friendslist',
+    //     auth,
+    //     friendInvitationControllers.controllers.getPendingList
+    // )
 
     router.post(
         '/deleterequest',
@@ -33,16 +32,16 @@ router.post(
         friendInvitationControllers.controllers.acceptRequest
     )
     
-    router.get(
-        '/friends',
-        auth,
-        friendInvitationControllers.controllers.getFriends
-    )
+    // router.get(
+    //     '/friends',
+    //     auth,
+    //     friendInvitationControllers.controllers.getFriends
+    // )
 
-    router.post(
-        '/getmessage',
-        auth,
-        getMessageRouter
-    )
+    // router.post(
+    //     '/getmessage',
+    //     auth,
+    //     getMessageRouter
+    // )
 
     module.exports = router;

@@ -32,8 +32,7 @@ const convertDateToHumanReadable = (date, format) => {
 };
 
 const Messages = ({ messagesFromContent }) => {
-  const { messageDetails } = useSelector((state) => state.chat);
-  const { messageDetailsFromDatabase } = useSelector((state) => state.chat);
+  const { chosenChatDetails, messageDetails } = useSelector( (state) => state.chat)
 
   return (
     <MainContainer>

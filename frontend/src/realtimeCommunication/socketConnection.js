@@ -1,57 +1,75 @@
 import io from 'socket.io-client'
-import { useSelector } from "react-redux";
+// import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
+import { setFriends, setPendingFriendsInvitations } from '../features/friends/friendsSlice';
+import 
+{ 
+  invitation, 
+  setFriendOnlineUsingSocket 
+} from '../features/friends/friendsSlice';
+import { useUpdateDirectChatHistoryIfActive } from '../shared/utils/chat'
+import * as roomHandler from './roomHandler';
 
-// let socket = null
+let socket = null
+
+export const connectWithSocketServer = (userDetails, dispatch) => {
 
 
+  const jwtToken = userDetails.userDetails.token;
+  socket = io("http://localhost:5002"  , {
+    auth: {
+      token: jwtToken,
+    }
+  });
 
-// export const connectWithSocketServer = (userDetails) => {
+  socket.on("connect", () => {
+    console.log(socket.id);
+  });
 
+  socket.on("friends-invitations", (data) => {
+    const { pendingInvitations } = data;
+    dispatch(setPendingFriendsInvitations(pendingInvitations));
+  });
 
-//   socket.on("connect", () => {
-//     console.log("succesfully connected with socket.io server");
-//     console.log(socket.id);
-//   });
+  socket.on("friends-list", (data) => {
+    const { friends } = data;
+    dispatch(setFriends(friends));
+    localStorage.setItem('friends', JSON.stringify(friends));
+  });
 
-//   socket.on("friends-invitations", (data) => {
-//     const { pendingInvitations } = data;
-//     store.dispatch(setPendingFriendsInvitations(pendingInvitations));
-//   });
+  socket.on("online-users", (data) => {
+    const { onlineUsers } = data;
+    dispatch(setFriendOnlineUsingSocket(onlineUsers));
+  });
 
-//   socket.on("friends-list", (data) => {
-//     const { friends } = data;
-//     store.dispatch(setFriends(friends));
-//   });
+  socket.on("direct-chat-history", (data) => {
+    console.log(data);
+    useUpdateDirectChatHistoryIfActive(data, dispatch);
+  });
 
-//   socket.on("online-users", (data) => {
-//     const { onlineUsers } = data;
-//     store.dispatch(setOnlineUsers(onlineUsers));
-//   });
-// };
+  socket.on("room-create", (data) => {
+    console.log(data);
+    roomHandler.newRoomCreated(data, dispatch)
+  })
 
-// export const useSendDirectMessage = (userDetails) => {
+  socket.on('active-rooms', (data) => {
+    roomHandler.updateActiveRooms(data, dispatch)
+});
 
-  // const [socket, setSocket] = useState(null);
-  //  const user = useSelector((state) => state.auth);
-  // useEffect( () => {
-  //   if (user || !user.user === null) {
-  //     const token = user.user.userDetails.token;
-  
-  //      socket = io("http://localhost:5002", {
-  //       auth: {
-  //         token,
-  //       },
-  //     })
+};
 
-      // console.log(userDetails, 'its data from useSocket direct-message')
-  //     const a = socket.emit('direct-message', userDetails)
-  //     console.log(a, 'its aaaaa');
+export const sendDirectMessage = (data) => {
+  socket.emit("direct-message", data)
+};
 
-  //     setSocket(socket)
-  //   }
-  // }, [user, sendDirectMessage])
+export const createNewRoom = () => {
+  socket.emit('room-create')
+};
 
-  //  return socket;
-// }; 
+export const joinRoom = (data) => {
+  socket.emit('room-join', data)
+}
 
+export const leaveRoom = (data) => {
+  socket.emit('room-leave', data)
+}

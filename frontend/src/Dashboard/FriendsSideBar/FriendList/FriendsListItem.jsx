@@ -3,24 +3,22 @@ import React, { useEffect } from 'react';
 import Avatar from '../../../shared/components/Avatar';
 import OnlineIndicator from './OnlineIndicator';
 import { setChosenChatDetails } from '../../../features/chatting/chattingSlice';
-import { useDispatch, useSelector } from 'react-redux'
-import { setSideBarOpenForMessage } from '../../../features/chatting/chattingSlice'
-
+import { useDispatch, useSelector } from 'react-redux';
+import { useUpdateDirectChatHistoryIfActive } from '../../../shared/utils/chat';
 
 const FriendsListItem = ({ id, username, isOnline }) => {
-
-    const { chatType } = useSelector( (state) => state.chat)
+    const { user } = useSelector((state) => state.auth);
+    const { chosenChatDetails } = useSelector((state) => state.chat);
+    const { chattingType } = useSelector( (state) => state.chat)
     const dispatch = useDispatch()
-    const handleChooseActiveConversation = () => {
-        dispatch(setChosenChatDetails({id, username, chatType   }))
-        // dispatch( setSideBarOpenForMessage(true))
-        // dispatch( setSideBarOpenForMessage(false))
+
+  
+        const handleChooseActiveConversation = () => {
+            dispatch(setChosenChatDetails({id, username, chattingType} ))
+            localStorage.setItem('setChosenChatDetails', JSON.stringify(id));
     }
-
-    // useEffect( () => {
-    //     f
-    // })
-
+  
+ 
   return (
     <Button 
     onClick={handleChooseActiveConversation}

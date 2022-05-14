@@ -1,11 +1,16 @@
 const User = require("../../models/user");
 const friendInvitation = require("../../models/friendInvitation");
+const friendsUpdates = require("../../socketHandlers/updates/friends");
 
 const postInvite = async (req, res) => {
   const { targetMailAddress } = req.body;
   const { userId, mail } = req.user;
 
+  console.log(mail, 'its mail from post Inviteeeeeeee');
+  console.log(targetMailAddress, 'its targetMailAddress from post Inviteeeeeeee');
+
   // check if friend that we would like to invite is not user
+  if (targetMailAddress && mail) {
 
   if (mail.toLowerCase() === targetMailAddress.toLowerCase()) { 
     return res
@@ -31,50 +36,12 @@ const postInvite = async (req, res) => {
     receiverId: targetUser._id,
   });
 
-  const checkFriend = await User.findById(userId);
-  const registerOnFriedAccount = await User.findById(targetUser._id);
-
-  const statusForRegisterOnFriedAccount =
-  registerOnFriedAccount.pendingFriends.includes(checkFriend._id);
-  const statusForcheckFriend = 
-  checkFriend.pendingFriends.includes(targetUser._id);
-
-  if (!statusForcheckFriend) {
-    const checkUser = await User.findOne({_id: checkFriend._id}, {friends: {$nin: [targetUser._id]}})
-
-    if (!checkUser) {
-    await User.updateOne(
-      { _id: checkFriend._id },
-      { $addToSet: { pendingFriends: targetUser._id } },
-      {
-        new: true,
-      }
-    ).exec(); 
-  }
-  }
-
-  // if (!statusForRegisterOnFriedAccount) {
-  //   await User.updateOne(
-  //     {
-  //       _id: targetUser._id,
-  //     },
-  //     {
-  //       $addToSet: {
-  //         pendingFriends: checkFriend._id,
-  //       },
-  //     },
-  //     {
-  //       new: true,
-  //     }
-  //   ).exec();
-  // }
-
   if (invitationAlreadyReceived) {
     return res.status(409).send("Invitation has been already sent");
   }
 
   // check if the user which we would like to invite is already our friend
-  const usersAlreadyFriends = targetUser.pendingFriends.find(
+  const usersAlreadyFriends = targetUser.friends.find(
     (freindId) => freindId.toString() === userId.toString()
   );
 
@@ -90,10 +57,12 @@ const postInvite = async (req, res) => {
     receiverId: targetUser._id,
   });
 
-
-
-  // if invitation has been successfully created we would like to update friends invitations if other user is online
+  // if invtiation has been successfully created we would like to update friends 
+  // invitations if other user is online send pending invitations update to specific user
+  friendsUpdates.updateFriendsPendingInvitations(targetUser._id.toString());
   return res.status(201).send("Invitation has been sent");
+}
+
 };
 
 module.exports = postInvite;

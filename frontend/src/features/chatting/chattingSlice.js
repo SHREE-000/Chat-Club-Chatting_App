@@ -12,7 +12,11 @@ const initialState = {
     newMessage: false,
     messageDetailsFromDatabase: [],
     sideBarOpenForMessage: false,
-    getUserId: ""
+    getUserId: "",
+    chattingType: {
+      DIRECT: 'DIRECT',
+      GROUP: 'GROUP',
+    },
 }
 
 export const getMessages = createAsyncThunk(
@@ -31,26 +35,54 @@ export const getMessages = createAsyncThunk(
           .post(`${API_URL}/getmessage`, data, config)
           .catch((error) => {
             const errorFromCatch = error.response.data;
-            console.log(errorFromCatch, 'errorFromCatcherrorFromCatch');
           });
-
-          console.log(response.data, 'its response.dataaaaaaaaaaaaaaaaa');
   
         return response.data;
       } catch (error) {}
     }
   );
 
+// export const updateDirectChatHistoryIfActive = (data) => {
+//   const { participants, messages } = data;
+  
+//   const getState = getState()
+//   console.log(getState, 'getStateeeeeeee');
+
+//   if (receiverId && userId) {
+//     const usersInCoversation = [receiverId, userId];
+
+//     updateChatHistoryIfSameConversationActive({
+//       participants,
+//       usersInCoversation,
+//       messages,
+//     });
+//   }
+// };
+
+// const updateChatHistoryIfSameConversationActive = ({
+//     participants,
+//     usersInCoversation,
+//     messages,
+// }) => {
+//   const dispatch = useDispatch()
+//   const result = participants.every(function (participantId) {
+//     return usersInCoversation.includes(participantId);
+//   });
+
+//   if (result) {
+//     dispatch(setMessages(messages));
+//   }
+// };
+
 export const chattingSlice = createSlice({
     name: 'chat',
     initialState,
     reducers: {
         setChosenChatDetails: (state, {payload}) => {
-
             return {
                 ...state,
                 chosenChatDetails: payload,
-                chatType: "DIRECT",
+                chattingType: payload.chatType,
                 messageDetails: []
             }               
   
@@ -71,12 +103,20 @@ export const chattingSlice = createSlice({
           },
 
 
-          setNewMessageStatus: (state, {payload}) => {
+          setChatType: (state, {payload}) => {
             return {
                 ...state,
-                newMessage: payload
+                DIRECT: payload,
+                GROUP: payload,
             }  
         },
+
+        setNewMessageStatus: (state, {payload}) => {
+          return {
+              ...state,
+              newMessage: payload
+          }  
+      },
 
         setSideBarOpenForMessage: (state, {payload}) => {
             return {
@@ -87,24 +127,24 @@ export const chattingSlice = createSlice({
 
     },
 
-    extraReducers: (builder) => {
-        builder
+    // extraReducers: (builder) => {
+    //     builder
 
-          .addCase(getMessages.fulfilled, (state, action) => {
-            //   console.log(action, 'its actionnnnnnn');
-        return {
-            ...state, 
-            messageDetailsFromDatabase : action.payload.messages,
-            messageDetails : action.payload.lastMessage,
-            getUserId : action.payload.userId,
-            // messageDetails: [...state.messageDetails, action.payload.lastMessage] 
-        }
+    //       .addCase(getMessages.fulfilled, (state, action) => {
+    //         //   console.log(action, 'its actionnnnnnn');
+    //     return {
+    //         ...state, 
+    //         messageDetailsFromDatabase : action.payload.messages,
+    //         messageDetails : action.payload.lastMessage,
+    //         getUserId : action.payload.userId,
+    //         // messageDetails: [...state.messageDetails, action.payload.lastMessage] 
+    //     }
               
-          })
-          .addCase(getMessages.rejected, (state) => {
-            state.messageDetailsFromDatabase = "";
-          });
-      },
+    //       })
+    //       .addCase(getMessages.rejected, (state) => {
+    //         state.messageDetailsFromDatabase = "";
+    //       });
+    //   },
 
 })
 

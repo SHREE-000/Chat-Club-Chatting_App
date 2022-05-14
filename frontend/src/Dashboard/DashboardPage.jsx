@@ -6,8 +6,10 @@ import Messenger from "../Dashboard/Messenger/Messenger";
 import AppBar from "../Dashboard/AppBar/AppBar";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { reset } from "../features/auth/authSlice";
+import { reset, setUser } from "../features/auth/authSlice";
 import Room from "./Room/Room";
+import { connectWithSocketServer } from '../realtimeCommunication/socketConnection';
+
 
 const Wrapper = styled("div")({
   width: "100%",
@@ -18,8 +20,18 @@ const Wrapper = styled("div")({
 const DashboardPage = ({socket}) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
   const { isUserInRoom } = useSelector((state) => state.room);
+  const { friends } = useSelector((state) => state.friends);
+
+  useEffect( () => {
+    const userInLocalStorage = localStorage.getItem('user')
+    if (!userInLocalStorage) {
+      onLogout();
+    } else {
+      dispatch(setUser(JSON.parse(userInLocalStorage)))
+      connectWithSocketServer(JSON.parse(userInLocalStorage), dispatch); 
+    }
+  }, [])
 
   const onLogout = () => {
     dispatch(reset());
@@ -27,13 +39,7 @@ const DashboardPage = ({socket}) => {
   };
 
 
-  if (!user) {
-    onLogout();
-  } else {
-    if (user) {
-      // connectWithSocketServer(user);
-    }
-  }
+
 
 
   return (

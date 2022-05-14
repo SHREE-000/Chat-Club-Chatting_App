@@ -19,19 +19,35 @@ export const roomSlice = createSlice({
     name: 'room',
     initialState,
     reducers: {
-        setOpenRoom: (state, {payload}) => {
-            console.log(payload, 'its payloaddddd');        
+        setOpenRoom: (state, {payload}) => {      
             return {
                 ...state,
                 isRoomCreator : payload,
                 isUserInRoom : payload,
             }
-        }  
+        },
+        
+        setRoomDetails: (state, {payload}) => {
+            return {
+                ...state,
+                userDetails: payload
+            }
+        },
+
+        setActiveRooms: (state, {payload}) => {
+            console.log(payload, 'its payloaddddd');
+            return {
+                ...state,
+                activeRooms: payload
+            }
+        },
     }
 });
 
 export const 
 { 
     setOpenRoom, 
+    setRoomDetails,
+    setActiveRooms,
 } = roomSlice.actions;
 export default roomSlice.reducer;

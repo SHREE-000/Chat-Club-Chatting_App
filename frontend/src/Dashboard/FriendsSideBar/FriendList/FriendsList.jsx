@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/system";
 import FriendsListItem from "./FriendsListItem";
-import { getFriends, getPendingListFriends } from "../../../features/friends/friendsSlice";
+import { setFriends } from "../../../features/friends/friendsSlice";
 import { useSelector, useDispatch } from "react-redux";
-
 
 const MainContainer = styled("div")({
   flexGrow: 1,
@@ -11,32 +10,47 @@ const MainContainer = styled("div")({
 });
 
 const FriendsList = () => {
-  const { friends, errorMessage, successMessage } = useSelector((state) => state.friends);
-  const { user } = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
-    
-  useEffect( ()=> {
-    if (user) {
-      dispatch(getFriends())
-      dispatch(getPendingListFriends())
-    }
-  },[errorMessage, successMessage])
+  const { friends, onlineUsers } = useSelector((state) => state.friends);
+  const frnd = JSON.parse(JSON.stringify(friends));
+  // const [modifiedUsers, setModifiedUsers] = useState([])
+  
 
-  const FRIENDS = [];
+  // useEffect(() => {
+  //   const checkOnlineUsers = (friends = [], onlineUsers = []) => {
+  //     friends.forEach((f) => {
+  //       onlineUsers.forEach((user) => {
+  //         if (user.userId === f.id) {
+  //           let modifiedUser = { ...f };
+  //           modifiedUser.isOnline = true;
+  //           setModifiedUsers([...modifiedUsers, modifiedUser])
+  //         }
+  //       });
+  //     });
+  //   };
+  //   checkOnlineUsers(friends, onlineUsers)
+  // }, [friends]);
 
-  if (friends) {
-  friends.map((state) => {
-    FRIENDS.push({
-      id: state._id,
-      username: state.username,
-      isOnline: state.isOnline,
-    })
-  })
-};
+  // const checkOnlineUsers = (friends = [], onlineUsers = []) => {
+  //   friends.forEach((f) => {
+  //     const isUserOnline = onlineUsers.find((user) => user.userId === f.id);
+  //     f.isOnline = isUserOnline ? true : false;
+  //   });
+
+  //   return friends;
+  // };
+
+  const checkOnlineUsers = (friends = [], onlineUsers = []) => {
+    friends.forEach((f) => {
+      const isUserOnline = onlineUsers.find((user) => user.userId === f.id);
+      f.isOnline = isUserOnline ? true : false;
+    });
+
+    return friends;
+  };
 
   return (
     <MainContainer>
-      {FRIENDS.map((friends) => {
+      {checkOnlineUsers(frnd, onlineUsers).map((friends) => {
         return (
           <FriendsListItem
             username={friends.username}

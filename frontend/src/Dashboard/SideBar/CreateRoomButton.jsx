@@ -10,7 +10,7 @@ const CreateRoomButton = () => {
 
     const createNewRoomHandler = () => {
         // creating a room and sending info to the server about this
-        roomHandler.createNewRoom(() => dispatch(setOpenRoom(true)))
+        roomHandler.createNewRoom(dispatch)
     }
   return (
     <Button

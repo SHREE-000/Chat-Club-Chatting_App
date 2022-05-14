@@ -1,17 +1,14 @@
-const authSocket = require("./middleware/authSocket");
-const { disconnectHandler } = require("./socketHandlers/disconnectHandler");
-const connectionHandler = require("./socketHandlers/connectionHandler");
+const verifyTokenSocket = require("./middleware/authSocket");
+const serverStore = require("./serverStore");
 const directMessageHandler = require("./socketHandlers/directMessageHandler");
-const { SocketEvents } = require("./utils/socket.util");
-const setSocketServerInstance = require('./socketHandlers/mongodb/setSocketServerInstance');
+const disconnectionHandler = require("./socketHandlers/disconnectionHandler");
+const newConnectonHandler = require("./socketHandlers/newConnectonHandler");
+const { SocketEvents } = require("./socketHandlers/socket.util");
 const directChatHistoryHandler = require('./socketHandlers/directChatHistoryHandler');
-const 
-{  
-  getSocketServerInstance, 
-  getSocketForChat,
-} = require('./socketHandlers/updates/chat')
-
+const roomCreateHandler = require('./socketHandlers/roomCreateHandler');
+const roomJoinHandler = require('./socketHandlers/roomJoinHandler');
 const registerSocketServer = (server) => {
+const roomLeaveHandler = require('./socketHandlers/roomLeaveHandler');
   const io = require("socket.io")(server, {
     cors: {
       origin: "*",
@@ -19,22 +16,50 @@ const registerSocketServer = (server) => {
     },
   });
 
-  setSocketServerInstance(io)
-  getSocketServerInstance(io)   
+  serverStore.setSocketServerInstance(io)
 
   io.use((socket, next) => {
-    authSocket(socket, next); 
+    verifyTokenSocket(socket, next); 
   });
 
+  const emitOnlineUsers = () => {
+    const onlineUsers = serverStore.getOnlineUsers();
+    io.emit("online-users", { onlineUsers });
+  };
+
   io.on(SocketEvents.CONNECTION, (socket) => {
-    // console.log(socket.id ,'-', socket.user.userId, 'its socket and idddddddd');
-    connectionHandler(socket, io);
-    directMessageHandler(socket)
-    directChatHistoryHandler(socket)
-    getSocketForChat(socket)
-    
-    socket.on(SocketEvents.DISCONNECT, () => disconnectHandler(socket));
+    console.log(socket.id ,'-', socket.user.userId, 'its socket and idddddddd');
+
+    newConnectonHandler(socket, io)
+    emitOnlineUsers();
+
+    socket.on("direct-message", (data) => {
+      directMessageHandler(socket, data)
+    })
+
+    socket.on("direct-chat-history", (data) => {
+      directChatHistoryHandler(socket, data);
+    });
+
+    socket.on("room-create", () => {
+      roomCreateHandler(socket);
+    });
+
+    socket.on('room-join', (data) => {
+      roomJoinHandler(socket, data)
+    })
+
+      socket.on('room-leave', (data) => {
+        roomLeaveHandler(socket, data)
+      })
+
+    socket.on(SocketEvents.DISCONNECT, () => disconnectionHandler(socket, io));
   });
+
+  setInterval(() => {
+    emitOnlineUsers();
+  }, [1000 * 8]);
+
 };
 
 module.exports = {

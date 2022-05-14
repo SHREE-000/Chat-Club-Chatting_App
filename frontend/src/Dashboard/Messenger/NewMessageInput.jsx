@@ -9,6 +9,7 @@ import {
   setMessages,
   getMessages,
 } from "../../features/chatting/chattingSlice";
+import { sendDirectMessage } from "../../realtimeCommunication/socketConnection"
 
 const MainContainer = styled("div")({
   height: "60px",
@@ -31,57 +32,19 @@ const Input = styled("input")({
 
 const NewMessageInput = () => {
   const dispatch = useDispatch();
-  const [socket, setSocket] = useState(null);
-  const user = useSelector((state) => state.auth);
-  const [messageSent, setMessageSent] = useState(false);
   const [message, setMessage] = useState();
-  const { sideBarOpenForMessage, getUserId, chosenChatDetails } = useSelector(
-    (state) => state.chat
-  );
-
-  useEffect(() => {
-    if (user || !user.user === null) {
-      const token = user.user.userDetails.token;
-
-      const socket = io("http://localhost:5002", {
-        auth: {
-          token,
-        },
-      });
-      setSocket(socket);
-
-      if (chosenChatDetails || !chosenChatDetails === null) {
-        socket.emit("direct-chat-history", {
-          receiverUserId: chosenChatDetails.id,
-        });
-      }
-
-      socket.on("direct-chat-history", (data) => {
-        dispatch(setMessages(data.messages));
-      });
-
-      dispatch(
-        getMessages({
-          receiverUserId: chosenChatDetails.id,
-          userId: getUserId,
-        })
-      )
+  const { chosenChatDetails, messageDetails } = useSelector( (state) => state.chat)
 
 
-      setMessageSent(false);
-    }
-  }, [messageSent, dispatch, sideBarOpenForMessage, chosenChatDetails]);
+  
 
   const handleMessageValueChange = (event) => {
     setMessage(event.target.value);
-    // dispatch(setNewMessages(event.target.value))
-    // dispatch(setMessages());
   };
 
   const handleKeyPressed = async (event) => {
     if (event.key === "Enter") {
       handleSendMessage();
-      setMessageSent(true);
     }
   };
 
@@ -90,11 +53,14 @@ const NewMessageInput = () => {
 
 
   const handleSendMessage = (userDetails) => {
+    setMessage("")
+
     if (message.length > 0) {
-      const emit = socket.emit("direct-message", {
+      sendDirectMessage({
         receiverUserId: chosenChatDetails.id,
         content: message,
       });
+      setMessage("");
     }
   };
 

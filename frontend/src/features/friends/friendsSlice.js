@@ -6,10 +6,10 @@ const API_URL = "http://localhost:5002/api/friend-invitation";
 // Get user from localStorage
 
 const initialState = {
-  sendPendingFriendsInvitatios: [],
-  pendingInvitations: [],
-  rejcetdFriendsInvitaitons: [],
+  onlineUsers: [],
+  pendingFriendsInvitations: [],
   friends: [],
+  sendPendingFriendsInvitatios: [],
   successMessage: "",
   errorMessage: "",
   messageForAcceptRequest: "",
@@ -87,28 +87,28 @@ export const deletePendingFriendRequest = createAsyncThunk(
   }
 );
 
-export const getPendingListFriends = createAsyncThunk(
-  `${API_URL}/friendslist`,
-  async (undefined, { getState }) => {
-    try {
-      const token = getState().auth.user.userDetails.token;
+// export const getPendingListFriends = createAsyncThunk(
+//   `${API_URL}/friendslist`,
+//   async (undefined, { getState }) => {
+//     try {
+//       const token = getState().auth.user.userDetails.token;
 
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
+//       const config = {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       };
 
-      let response = await axios
-        .get(`${API_URL}/friendslist`, config)
-        .catch((error) => {
-          errorFromCatch = error.response.data;
-        });
+//       let response = await axios
+//         .get(`${API_URL}/friendslist`, config)
+//         .catch((error) => {
+//           errorFromCatch = error.response.data;
+//         });
 
-      return response.data;
-    } catch (error) {}
-  }
-);
+//       return response.data;
+//     } catch (error) {}
+//   }
+// );
 // Invite a friend
 export const invitation = createAsyncThunk(
   "http://localhost:5002/api/friend-invitation/invite",
@@ -127,25 +127,23 @@ export const invitation = createAsyncThunk(
       let response = await axios
         .post(`${API_URL}/invite`, data, config)
         .catch((error) => {
-          errorFromCatch = error.response.data;
+          errorFromCatch = error.response.data
+          console.log(errorFromCatch,'errorFromCatcherrorFromCatch');
+          return errorFromCatch;
         });
-
       return response.data;
-    } catch (error) {
+    } catch (err) {
       // const message =
-      //   (error.response &&
-      //     error.response.data &&
-      //     error.response.data.message) ||
-      //   error.message ||
-      //   error.toString();
-      // return thunkAPI.rejectWithValue(message);
+      //   err.response && err.response.data ? err.response.data : err.message;
+      // throw new Error(message);
     }
   }
-);  
+);
 
 export const friendsSlice = createSlice({
   name: "friends",
   initialState,
+  errorFromCatch,
   reducers: {
     resetPendingInvitation: (initialState) => {
       initialState.errorMessage = "";
@@ -157,21 +155,39 @@ export const friendsSlice = createSlice({
       initialState.messageForRejectRequest = "";
       return initialState;
     },
-    resetpendingInvitations: (initialState) => {
-      initialState.pendingInvitations = "";
+    resetpendingFriendsInvitations: (initialState) => {
+      initialState.pendingFriendsInvitations = "";
       initialState.sendPendingFriendsInvitatios = "";
       initialState.friends = "";
       return initialState;
     },
-
     setFriendOnlineUsingSocket: (state, { payload }) => {
-      state.friends.map((friends) =>
-        friends._id === payload.userId
-          ? { ...friends, isOnline: payload.status }
-          : friends
-      );
+      return {
+        ...state,
+        onlineUsers: payload,
+      };
+    },
 
-      return state;
+    setFriends: (state, { payload }) => {
+      return {
+        ...state,
+        friends: payload,
+      };
+    },
+
+    setPendingFriendsInvitations: (state, { payload }) => {
+      return {
+        ...state,
+        pendingFriendsInvitations: payload,
+      };
+    },
+
+    setPedingErrorMessage: (state, {payload}) => {
+      // console.log(errorFromCatch, 'errorFromCatcherrorFromCatch');
+      return {
+        ...state,
+        errorMessage : errorFromCatch
+      }
     },
 
     socketErrorAlertForSocket: (state, { payload }) => {
@@ -181,30 +197,15 @@ export const friendsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(invitation.fulfilled, (state, action) => {
-        state.sendPendingFriendsInvitatios = [
-          ...state.sendPendingFriendsInvitatios,
-          action.meta.arg,
-        ];
-
-        if (action.payload || !action.payload === null) {
-          state.successMessage = action.payload;
-        } else {
-          state.errorMessage = errorFromCatch;
+        if (action.payload) {
+          state.successMessage = action.payload
         }
-      })
-      .addCase(invitation.rejected, (state, action) => {
-        state.rejcetdFriendsInvitaitons = [
-          ...state.rejcetdFriendsInvitaitons,
-          action.meta.arg,
-        ];
-        state.errorMessage = errorFromCatch;
+        state.errorMessage = errorFromCatch
+
       })
 
-      .addCase(getPendingListFriends.fulfilled, (state, action) => {
-        state.pendingInvitations = action.payload;
-      })
-      .addCase(getPendingListFriends.rejected, (state) => {
-        state.pendingInvitations = "";
+      .addCase(invitation.rejected, (state, { action }) => {
+        state.errorMessage = errorFromCatch
       })
 
       .addCase(deletePendingFriendRequest.fulfilled, (state, action) => {
@@ -228,14 +229,17 @@ export const friendsSlice = createSlice({
         state.friends = "";
         state.onlineFriends = "";
       });
-  }, 
+  },
 });
 
 export const {
   resetPendingInvitation,
-  resetpendingInvitations,
+  resetpendingFriendsInvitations,
   resetAlertMesssagesFromInvitations,
   setFriendOnlineUsingSocket,
   socketErrorAlertForSocket,
+  setFriends,
+  setPendingFriendsInvitations,
+  setPedingErrorMessage,
 } = friendsSlice.actions;
 export default friendsSlice.reducer;

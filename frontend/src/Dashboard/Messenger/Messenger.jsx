@@ -13,7 +13,6 @@ const MainContainer = styled('div')({
 
 const Messenger = () => {
   const { chosenChatDetails } = useSelector( (state) => state.chat)
-  // console.log(chosenChatDetails, 'chosenChatDetails');
   return (
     <MainContainer>
       {!chosenChatDetails  ?

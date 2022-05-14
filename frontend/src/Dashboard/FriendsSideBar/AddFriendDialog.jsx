@@ -15,21 +15,15 @@ import AlertNotification from '../../shared/components/AlertNotification'
 const AddFriendDialog = ({
     isDialogOpen,
     closeDialogHandler,
-    sendFriendInvitation = () => {}
 }) => {
     const [mail, setMail] = useState()
     const [isFormValid, setIsFormValid] = useState()
 
-    
-    
     const { errorMessage, successMessage } = useSelector((state) => state.friends);
 
     const dispatch = useDispatch()
 
     const handleSendInvitation = async() => {
-        sendFriendInvitation({
-            targetMailAddress: mail
-        })
         dispatch(invitation(mail))
         dispatch(resetPendingInvitation())    
         setTimeout( () => {

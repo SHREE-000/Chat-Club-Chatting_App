@@ -2,29 +2,38 @@ import { Tooltip, Typography, Box } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Avatar from "../../../shared/components/Avatar";
 import InvitationDecisionButtons from './InvitationDecisionButtons';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import 
+{ 
+  acceptPendingFriendRequest, 
+  deletePendingFriendRequest 
+} from '../../../features/friends/friendsSlice';
 
 const PendingInvitationsListItem = ({
   id,
   username,
   mail,
-  acceptFriendInvitation,
-  rejectFriendInvitation
+  acceptFriendInvitation = () => {},
+  rejectFriendInvitation = () => {},
 }) => {
+
+  const { 
+    pendingFriendsInvitations,
+   } = useSelector((state) => state.friends);
+
+  const dispatch = useDispatch()
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
-  // const handleAcceptInvitation = () => {
-  //   acceptFriendInvitation({ id });
-  // };
+  const handleAcceptInvitation = () => {
+    acceptFriendInvitation({ id });
+  };
 
-  // const handleRejectInvitation = () => {
-  //   rejectFriendInvitation({ id });
-  // };
-
-  const { pendingInvitations } = useSelector((state) => state.friends);
+  const handleRejectInvitation = () => {
+    rejectFriendInvitation({ id });
+  };
 
   useEffect( () => {
-      if (!pendingInvitations[0]._id || pendingInvitations[0]._id === null) {
+      if (!pendingFriendsInvitations[0]._id || pendingFriendsInvitations[0]._id === null) {
         setButtonDisabled(true)
       } else {
     setButtonDisabled(false)

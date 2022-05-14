@@ -10,13 +10,12 @@ const Wrapper = styled('div')({
     flexGrow: 1,
 });
 
-
-
 const MessengerContent = () => {
+  const { chosenChatDetails } = useSelector( (state) => state.chat)
 
-  // useEffect( () => {
-  //   console.log('abcdefghijklmn');
-  // })
+  useEffect( () => {
+    // fetching chat history from specific user id
+  }, [chosenChatDetails])
 
   return (
     <Wrapper>

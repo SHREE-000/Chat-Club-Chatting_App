@@ -4,11 +4,12 @@ import PendingInvitationsListItem from "./PendingInvitationsListItem";
 import { useSelector, useDispatch } from "react-redux";
 import 
 { 
-  getPendingListFriends, 
-  deletePendingFriendRequest, 
+    
   acceptPendingFriendRequest, 
   resetAlertMesssagesFromInvitations,
-  resetpendingInvitations 
+  resetpendingInvitations,
+  setPendingFriendsInvitations,
+  deletePendingFriendRequest,
 } from "../../../features/friends/friendsSlice";
 import AlertNotification from '../../../shared/components/AlertNotification'
 
@@ -22,28 +23,15 @@ const MainContainer = styled("div")({
 });
 
 const PendingInvitationsList = () => {
-  
 
    const { 
      pendingInvitations, 
      messageForAcceptRequest, 
-     messageForRejectRequest 
+     messageForRejectRequest ,
+     pendingFriendsInvitations,
+     sendPendingFriendsInvitatios
     } = useSelector((state) => state.friends);
-
-    const INVITATIONS = [];
-    pendingInvitations && 
-    pendingInvitations.map((details) => {
-        INVITATIONS.push({
-        _id: details._id,
-        senderId: {
-          username: details.username,
-          mail: details.mail,
-
-        },
-      })
   
-    });
-
     const handleAcceptInvitation = (id) => {
       dispatch(acceptPendingFriendRequest(id))
       setTimeout( () => {
@@ -64,13 +52,13 @@ const PendingInvitationsList = () => {
   const dispatch = useDispatch()
 
   const getList = async () => {
-        dispatch(getPendingListFriends())
+        dispatch(setPendingFriendsInvitations())
   }
 
     useEffect( () => {
         getList()
       return () => {
-        dispatch(resetpendingInvitations())
+        // dispatch(resetpendingInvitations())
       }
     },[ dispatch, messageForAcceptRequest, messageForRejectRequest])
 
@@ -80,7 +68,8 @@ const PendingInvitationsList = () => {
       errorMessageFromDeleteFriendRequest = {messageForRejectRequest}
       successMessageFromDeleteFriendRequest = {messageForAcceptRequest}
       />
-      {INVITATIONS.map((invitation) => {
+      {pendingFriendsInvitations &&
+      pendingFriendsInvitations.map((invitation) => {
         return (
           <PendingInvitationsListItem
             key={invitation._id}
