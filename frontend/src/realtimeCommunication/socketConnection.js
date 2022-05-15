@@ -11,6 +11,7 @@ import {
 } from "../features/friends/friendsSlice";
 import { useUpdateDirectChatHistoryIfActive } from "../shared/utils/chat";
 import * as roomHandler from "./roomHandler";
+import * as webRTCHandler from './webRTCHandler';
 
 let socket = null;
 
@@ -43,7 +44,6 @@ export const connectWithSocketServer = (userDetails, dispatch) => {
   });
 
   socket.on("direct-chat-history", (data) => {
-    console.log(data);
     useUpdateDirectChatHistoryIfActive(data, dispatch);
   });
 
@@ -59,12 +59,33 @@ export const connectWithSocketServer = (userDetails, dispatch) => {
   socket.on("conn-prepare", (data) => {
     console.log("prepare for connection");
     console.log(data);
+    const { connUserSocketId } = data;
+    webRTCHandler.prepareNewPeerConnection(connUserSocketId, false);
+    socket.emit('conn-init', { connUserSocketId: connUserSocketId });
   });
-  
+
+  socket.on("conn-init", (data) => {
+    const { connUserSocketId } = data;
+    webRTCHandler.prepareNewPeerConnection(connUserSocketId, true);
+  });
+
+  socket.on("conn-signal", (data) => {
+    webRTCHandler.handleSignalingData(data);
+  });
+
+  socket.on("room-participant-left", (data) => {
+    console.log('User left room');
+    webRTCHandler.handleParticipantLeftRoom(data, dispatch);
+  });
+
 };
 
 export const sendDirectMessage = (data) => {
   socket.emit("direct-message", data);
+};
+
+export const getDirectChatHistory = (data) => {
+  socket.emit("direct-chat-history", data);
 };
 
 export const createNewRoom = () => {
@@ -78,3 +99,7 @@ export const joinRoom = (data) => {
 export const leaveRoom = (data) => {
   socket.emit("room-leave", data);
 };
+
+export const signalPeerData = (data) => {
+  socket.emit("conn-signal", data);
+}

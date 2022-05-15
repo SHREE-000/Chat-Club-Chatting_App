@@ -9,13 +9,17 @@ const MainContainer = styled('div')({
     display: 'flex',
     flexWrap: 'wrap',
 });
-
+// addNewRemoteStream
 const VideoContainer = () => {
-  const { localStream } = useSelector( (state) => state.room  )
-  console.log(localStream, 'its local stream');
+  const { localStream, remoteStream } = useSelector( (state) => state.room  )
+  console.log(localStream, 'its local stream from Video Container');
   return (
     <MainContainer>
       <Video stream={localStream} isLocalStream/>
+      {remoteStream.map(stream => <Video 
+      stream={stream}
+      key={stream.id}
+      />)}
     </MainContainer>
   )
 }

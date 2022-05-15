@@ -4,6 +4,8 @@ import ScreenShareButton from './ScreenShareButton';
 import MicButton from './MicButton';
 import CameraButton from './CameraButton';
 import CloseRoomButton from './CloseRoomButton';
+import { useSelector } from 'react-redux';
+
 
 const MainContainer = styled('div')({
     height: '15%',
@@ -17,12 +19,14 @@ const MainContainer = styled('div')({
 });
 
 const RoomButtons = () => {
+  const { localStream, remoteStream } = useSelector( (state) => state.room  )
+
   return (
     <MainContainer>
       <ScreenShareButton />
-      <MicButton />
+      <MicButton localStream={localStream} />
       <CloseRoomButton />      
-      <CameraButton />
+      <CameraButton localStream={localStream} />
     </MainContainer>
   )
 }

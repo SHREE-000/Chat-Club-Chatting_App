@@ -4,11 +4,14 @@ const directMessageHandler = require("./socketHandlers/directMessageHandler");
 const disconnectionHandler = require("./socketHandlers/disconnectionHandler");
 const newConnectonHandler = require("./socketHandlers/newConnectonHandler");
 const { SocketEvents } = require("./socketHandlers/socket.util");
-const directChatHistoryHandler = require('./socketHandlers/directChatHistoryHandler');
-const roomCreateHandler = require('./socketHandlers/roomCreateHandler');
-const roomJoinHandler = require('./socketHandlers/roomJoinHandler');
+const directChatHistoryHandler = require("./socketHandlers/directChatHistoryHandler");
+const roomCreateHandler = require("./socketHandlers/roomCreateHandler");
+const roomJoinHandler = require("./socketHandlers/roomJoinHandler");
 const registerSocketServer = (server) => {
-const roomLeaveHandler = require('./socketHandlers/roomLeaveHandler');
+const roomLeaveHandler = require("./socketHandlers/roomLeaveHandler");
+const roomInitializeConnectionHandler = require("./socketHandlers/roomInitializeConnectionHandler");
+const roomSignalingDataHandler = require("./socketHandlers/roomSignalingDataHandler");
+
   const io = require("socket.io")(server, {
     cors: {
       origin: "*",
@@ -16,10 +19,10 @@ const roomLeaveHandler = require('./socketHandlers/roomLeaveHandler');
     },
   });
 
-  serverStore.setSocketServerInstance(io)
+  serverStore.setSocketServerInstance(io);
 
   io.use((socket, next) => {
-    verifyTokenSocket(socket, next); 
+    verifyTokenSocket(socket, next);
   });
 
   const emitOnlineUsers = () => {
@@ -28,14 +31,14 @@ const roomLeaveHandler = require('./socketHandlers/roomLeaveHandler');
   };
 
   io.on(SocketEvents.CONNECTION, (socket) => {
-    console.log(socket.id ,'-', socket.user.userId, 'its socket and idddddddd');
+    console.log(socket.id, "-", socket.user.userId, "its socket and idddddddd");
 
-    newConnectonHandler(socket, io)
+    newConnectonHandler(socket, io);
     emitOnlineUsers();
 
     socket.on("direct-message", (data) => {
-      directMessageHandler(socket, data)
-    })
+      directMessageHandler(socket, data);
+    });
 
     socket.on("direct-chat-history", (data) => {
       directChatHistoryHandler(socket, data);
@@ -45,13 +48,21 @@ const roomLeaveHandler = require('./socketHandlers/roomLeaveHandler');
       roomCreateHandler(socket);
     });
 
-    socket.on('room-join', (data) => {
-      roomJoinHandler(socket, data)
-    })
+    socket.on("room-join", (data) => {
+      roomJoinHandler(socket, data);
+    });
 
-      socket.on('room-leave', (data) => {
-        roomLeaveHandler(socket, data)
-      })
+    socket.on("room-leave", (data) => {
+      roomLeaveHandler(socket, data);
+    });
+
+    socket.on("conn-init", (data) => {
+      roomInitializeConnectionHandler(socket, data)
+    });
+
+    socket.on("conn-signal", data => {
+      roomSignalingDataHandler(socket, data)
+    });
 
     socket.on(SocketEvents.DISCONNECT, () => disconnectionHandler(socket, io));
   });
@@ -59,7 +70,6 @@ const roomLeaveHandler = require('./socketHandlers/roomLeaveHandler');
   setInterval(() => {
     emitOnlineUsers();
   }, [1000 * 8]);
-
 };
 
 module.exports = {

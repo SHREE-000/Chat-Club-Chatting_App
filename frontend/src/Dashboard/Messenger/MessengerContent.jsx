@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { io } from "socket.io-client";
 import { styled } from "@mui/system";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import Messages from "./Messages/Messages";
 import NewMessageInput from "./NewMessageInput"
-import { setMessages } from "../../features/chatting/chattingSlice";
+import { getDirectChatHistory } from '../../realtimeCommunication/socketConnection'; 
 
 const Wrapper = styled('div')({
     flexGrow: 1,
@@ -15,7 +14,12 @@ const MessengerContent = () => {
 
   useEffect( () => {
     // fetching chat history from specific user id
+    getDirectChatHistory({
+      receiverUserId: chosenChatDetails.id,
+     })
   }, [chosenChatDetails])
+  console.log(chosenChatDetails);
+
 
   return (
     <Wrapper>

@@ -1,15 +1,13 @@
 import { Button, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import React from 'react';
 import Avatar from '../../../shared/components/Avatar';
 import OnlineIndicator from './OnlineIndicator';
 import { setChosenChatDetails } from '../../../features/chatting/chattingSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { useUpdateDirectChatHistoryIfActive } from '../../../shared/utils/chat';
 
 const FriendsListItem = ({ id, username, isOnline }) => {
-    const { user } = useSelector((state) => state.auth);
-    const { chosenChatDetails } = useSelector((state) => state.chat);
     const { chattingType } = useSelector( (state) => state.chat)
+    const {  messageDetails } = useSelector( (state) => state.chat)
     const dispatch = useDispatch()
 
   

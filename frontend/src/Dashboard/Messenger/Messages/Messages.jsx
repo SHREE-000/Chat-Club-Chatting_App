@@ -1,14 +1,10 @@
-import React, { useRef, useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React from "react";
+import { useSelector } from "react-redux";
 import { styled } from "@mui/system";
-import DUMMY_MESSAGES from "./DUMMY_MESSAGES";
 import MessagesHeader from "./MessagesHeader";
 import Message from "./Message";
 import DateSeparator from "./DateSeparator";
-import { io } from "socket.io-client";
-import { setMessages } from "../../../features/chatting/chattingSlice";
 
-let socket = null;
 const MainContainer = styled("div")({
   height: "calc(100% - 60px)",
   overflow: "auto",
@@ -31,8 +27,8 @@ const convertDateToHumanReadable = (date, format) => {
   return format.replace(/mm|dd|yy|yyy/gi, (matched) => map[matched]);
 };
 
-const Messages = ({ messagesFromContent }) => {
-  const { chosenChatDetails, messageDetails } = useSelector( (state) => state.chat)
+const Messages = () => {
+  const {  messageDetails } = useSelector( (state) => state.chat)
 
   return (
     <MainContainer>

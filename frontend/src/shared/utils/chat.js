@@ -1,6 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
 import { setMessages } from "../../features/chatting/chattingSlice";
-import React, { useEffect } from "react";
 
 export const useUpdateDirectChatHistoryIfActive = (data, dispatch) => {
     

@@ -5,6 +5,7 @@ import
     setRoomDetails,
     setActiveRooms,
     setLocalStream,
+    setRemoteStreams,
 } from '../features/room/roomSlice'
 import * as webRTCHandler from './webRTCHandler';
 
@@ -58,6 +59,10 @@ export const leaveRoom = (dispatch) => {
     //      localStream.getTracks().forEach(track => track.stop());
     //      dispatch(setLocalStream(null));
     //  } 
+
+    dispatch(setRemoteStreams([]));
+    webRTCHandler.closeAllConnections();
+
      socketConnection.leaveRoom({ roomId });
      dispatch(setRoomDetails(null));
      dispatch(setOpenRoom(false, false));

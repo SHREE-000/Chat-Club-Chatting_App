@@ -1,15 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { styled } from "@mui/system";
-import { io } from "socket.io-client";
-import { setNewMessages } from "../../features/chatting/chattingSlice";
-// import { useSocket } from "../../features/customHooks/useSocket";
-// import { sendDirectMessage } from "../../realtimeCommunication/socketConnection";
-import {
-  setMessages,
-  getMessages,
-} from "../../features/chatting/chattingSlice";
-import { sendDirectMessage } from "../../realtimeCommunication/socketConnection"
+import { sendDirectMessage } from "../../realtimeCommunication/socketConnection";
 
 const MainContainer = styled("div")({
   height: "60px",
@@ -31,12 +23,8 @@ const Input = styled("input")({
 });
 
 const NewMessageInput = () => {
-  const dispatch = useDispatch();
   const [message, setMessage] = useState();
-  const { chosenChatDetails, messageDetails } = useSelector( (state) => state.chat)
-
-
-  
+  const { chosenChatDetails } = useSelector((state) => state.chat);
 
   const handleMessageValueChange = (event) => {
     setMessage(event.target.value);
@@ -48,12 +36,8 @@ const NewMessageInput = () => {
     }
   };
 
-
-
-
-
   const handleSendMessage = (userDetails) => {
-    setMessage("")
+    setMessage("");
 
     if (message.length > 0) {
       sendDirectMessage({

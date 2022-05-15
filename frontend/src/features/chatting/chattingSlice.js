@@ -42,38 +42,6 @@ export const getMessages = createAsyncThunk(
     }
   );
 
-// export const updateDirectChatHistoryIfActive = (data) => {
-//   const { participants, messages } = data;
-  
-//   const getState = getState()
-//   console.log(getState, 'getStateeeeeeee');
-
-//   if (receiverId && userId) {
-//     const usersInCoversation = [receiverId, userId];
-
-//     updateChatHistoryIfSameConversationActive({
-//       participants,
-//       usersInCoversation,
-//       messages,
-//     });
-//   }
-// };
-
-// const updateChatHistoryIfSameConversationActive = ({
-//     participants,
-//     usersInCoversation,
-//     messages,
-// }) => {
-//   const dispatch = useDispatch()
-//   const result = participants.every(function (participantId) {
-//     return usersInCoversation.includes(participantId);
-//   });
-
-//   if (result) {
-//     dispatch(setMessages(messages));
-//   }
-// };
-
 export const chattingSlice = createSlice({
     name: 'chat',
     initialState,
@@ -126,26 +94,6 @@ export const chattingSlice = createSlice({
         },
 
     },
-
-    // extraReducers: (builder) => {
-    //     builder
-
-    //       .addCase(getMessages.fulfilled, (state, action) => {
-    //         //   console.log(action, 'its actionnnnnnn');
-    //     return {
-    //         ...state, 
-    //         messageDetailsFromDatabase : action.payload.messages,
-    //         messageDetails : action.payload.lastMessage,
-    //         getUserId : action.payload.userId,
-    //         // messageDetails: [...state.messageDetails, action.payload.lastMessage] 
-    //     }
-              
-    //       })
-    //       .addCase(getMessages.rejected, (state) => {
-    //         state.messageDetailsFromDatabase = "";
-    //       });
-    //   },
-
 })
 
 export const {

@@ -35,14 +35,14 @@ export const roomSlice = createSlice({
         },
 
         setActiveRooms: (state, {payload}) => {
-            console.log(payload, 'its payloaddddd');
             return {
                 ...state,
                 activeRooms: payload
             }
         },
-
+        
         setLocalStream: (state, {payload}) => {
+            console.log(payload, 'its payloaddddd from setLocalStream in roomSlice');
             return {
                 ...state,
                 localStream: payload
@@ -55,6 +55,13 @@ export const roomSlice = createSlice({
                 audioOnly: payload
             }
         },
+
+        setRemoteStreams: (state, {payload}) => {
+            return {
+                ...state,
+                remoteStream: payload
+            }
+        }
     }
 });
 
@@ -65,5 +72,6 @@ export const
     setActiveRooms,
     setLocalStream,
     setAudioOnly,
+    setRemoteStreams,
 } = roomSlice.actions;
 export default roomSlice.reducer;
