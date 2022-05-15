@@ -23,6 +23,7 @@
     "react-toastify": "^8.2.0",
     "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^2.4.1",
+    "simple-peer": "^9.11.1",
     "socket.io-client": "^4.5.0"
   },
   "scripts": {

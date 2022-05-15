@@ -1,25 +1,25 @@
-import io from 'socket.io-client'
+import io from "socket.io-client";
 // import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
-import { setFriends, setPendingFriendsInvitations } from '../features/friends/friendsSlice';
-import 
-{ 
-  invitation, 
-  setFriendOnlineUsingSocket 
-} from '../features/friends/friendsSlice';
-import { useUpdateDirectChatHistoryIfActive } from '../shared/utils/chat'
-import * as roomHandler from './roomHandler';
+import {
+  setFriends,
+  setPendingFriendsInvitations,
+} from "../features/friends/friendsSlice";
+import {
+  invitation,
+  setFriendOnlineUsingSocket,
+} from "../features/friends/friendsSlice";
+import { useUpdateDirectChatHistoryIfActive } from "../shared/utils/chat";
+import * as roomHandler from "./roomHandler";
 
-let socket = null
+let socket = null;
 
 export const connectWithSocketServer = (userDetails, dispatch) => {
-
-
   const jwtToken = userDetails.userDetails.token;
-  socket = io("http://localhost:5002"  , {
+  socket = io("http://localhost:5002", {
     auth: {
       token: jwtToken,
-    }
+    },
   });
 
   socket.on("connect", () => {
@@ -34,7 +34,7 @@ export const connectWithSocketServer = (userDetails, dispatch) => {
   socket.on("friends-list", (data) => {
     const { friends } = data;
     dispatch(setFriends(friends));
-    localStorage.setItem('friends', JSON.stringify(friends));
+    localStorage.setItem("friends", JSON.stringify(friends));
   });
 
   socket.on("online-users", (data) => {
@@ -49,27 +49,32 @@ export const connectWithSocketServer = (userDetails, dispatch) => {
 
   socket.on("room-create", (data) => {
     console.log(data);
-    roomHandler.newRoomCreated(data, dispatch)
-  })
+    roomHandler.newRoomCreated(data, dispatch);
+  });
 
-  socket.on('active-rooms', (data) => {
-    roomHandler.updateActiveRooms(data, dispatch)
-});
+  socket.on("active-rooms", (data) => {
+    roomHandler.updateActiveRooms(data, dispatch);
+  });
 
+  socket.on("conn-prepare", (data) => {
+    console.log("prepare for connection");
+    console.log(data);
+  });
+  
 };
 
 export const sendDirectMessage = (data) => {
-  socket.emit("direct-message", data)
+  socket.emit("direct-message", data);
 };
 
 export const createNewRoom = () => {
-  socket.emit('room-create')
+  socket.emit("room-create");
 };
 
 export const joinRoom = (data) => {
-  socket.emit('room-join', data)
-}
+  socket.emit("room-join", data);
+};
 
 export const leaveRoom = (data) => {
-  socket.emit('room-leave', data)
-}
+  socket.emit("room-leave", data);
+};

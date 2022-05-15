@@ -4,11 +4,17 @@ import
     setOpenRoom, 
     setRoomDetails,
     setActiveRooms,
+    setLocalStream,
 } from '../features/room/roomSlice'
+import * as webRTCHandler from './webRTCHandler';
 
 export const createNewRoom = (dispatch) => {
-    dispatch(setOpenRoom(true))
-    socketConnection.createNewRoom()
+    const onlyAudio = JSON.parse(localStorage.getItem('audioOnly'))
+    const successCalbackFunc = () => {
+    dispatch(setOpenRoom(true, true))
+    socketConnection.createNewRoom() 
+  }
+  webRTCHandler.getLocalStreamPreview(onlyAudio, successCalbackFunc, dispatch)
 }
 
 export const newRoomCreated = (data, dispatch) => {
@@ -32,14 +38,26 @@ export const updateActiveRooms = (data, dispatch) => {
 }
 
 export const joinRoom = (roomId, dispatch) => {
+    const successCalbackFunc = () => {
     dispatch(setRoomDetails({roomId}));
     dispatch(setOpenRoom(false, true));
     socketConnection.joinRoom({ roomId });
     localStorage.setItem('room', JSON.stringify(roomId))
+  }
+  const onlyAudio = JSON.parse(localStorage.getItem('audioOnly'))
+  webRTCHandler.getLocalStreamPreview(onlyAudio, successCalbackFunc, dispatch)
+
 }
 
 export const leaveRoom = (dispatch) => {
-     const roomId = JSON.parse(localStorage.gettItem('room'));
+
+     const localStream = JSON.parse(localStorage.getItem('stream'))
+     const roomId = JSON.parse(localStorage.getItem('room'));
+
+    //  if (localStream) {
+    //      localStream.getTracks().forEach(track => track.stop());
+    //      dispatch(setLocalStream(null));
+    //  } 
      socketConnection.leaveRoom({ roomId });
      dispatch(setRoomDetails(null));
      dispatch(setOpenRoom(false, false));
